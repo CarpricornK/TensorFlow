@@ -1,11 +1,10 @@
-import pandas as pd
-
+import operator
 from math import log
-
+from numpy import dot
+from numpy.linalg import norm
 from konlpy.tag import Hannanum
 
 import re
-
 def tf(t, d):
     return d.count(t)
 
@@ -20,9 +19,8 @@ def idf(t):
 def tfidf(t, d):
     return tf(t, d)* idf(t)
 
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', None)
-pd.set_option('display.width', None)
+def cos_sim(A, B):
+    return dot(A, B)/(norm(A)*norm(B))
 
 myHannanum = Hannanum()
 
@@ -42,8 +40,6 @@ for org_doc in org_docs:
     replace_doc = re.sub("[!@#$%^&*()_+]", " ", org_doc)
     docs.append(" ".join(myHannanum.nouns(replace_doc)))
 
-
-
 print(docs)
 
 vocab = list(set(w for doc in docs for w in doc.split()))
@@ -53,7 +49,8 @@ print("중복 제거된 단어 : " + str(vocab))
 
 N = len(docs)
 
-print("문서의 수 :" + str(N))
+print("문서의 수 : " + str(N))
+
 
 result = []
 for i in range(N):
@@ -62,49 +59,45 @@ for i in range(N):
 
     for j in range(len(vocab)):
         t = vocab[j]
-        result[-1].append(tf(t, d))
+        result[-1].append(tfidf(t, d))
 
+    print(result[i])
 
-tf_ = pd.DataFrame(result, columns = vocab)
+print("문서1과 문서2의 유사도 : "+ str(cos_sim(result[0], result[1])))
 
-print("---------------")
-print("TF 결과")
-print(tf_)
-print("----------------")
+print("문서1과 문서3의 유사도 : "+ str(cos_sim(result[0], result[2])))
 
-result = []
-for j in range(len(vocab)):
-    t = vocab[j]
-    result.append(idf(t))
+print("문서1과 문서4의 유사도 : "+ str(cos_sim(result[0], result[3])))
 
-idf_ = pd.DataFrame(result, index = vocab, columns = ["IDF"])
+print("문서1과 문서5의 유사도 : "+ str(cos_sim(result[0], result[4])))
 
-print("---------------")
-print("IDF 결과")
-print(idf_)
-print("----------------")
+# print("문서1과 문서6의 유사도 : "+ str(cos_sim(result[0], result[5])))
 
-result = []
+print("-----------------------")
+
+res = {}
+
 for i in range(N):
-    result.append([])
-    d = docs[i]
-    for j in range(len(vocab)):
-        t = vocab[j]
 
-        result[-1].append(tfidf(t,d))
+    doc_number = i+1
 
-tfidf_ = pd.DataFrame(result, columns = vocab)
+    if doc_number!=1:
+        cos_res = cos_sim(result[0], result[i])
 
-print("---------------")
-print("TF-IDF 결과")
-print(tfidf_)
-print("----------------")
+        res[i] = cos_res
 
+        print("문석1과 문서"+ str(doc_number) + "의 유사도 : "+ str(cos_res))
 
+print("------------------------")
+print("결과값 : "+ str(res))
+print("------------------------")
+print("문서1과 가장 유사한 문서는? : ")
 
+my_doc = sorted(res.items(), key=operator.itemgetter(1), reverse=True)
 
-
-
+print("결과 : " + str(my_doc[0]))
+print("문서1 : " + str(org_docs[0]))
+print("문서"+ str(my_doc[0][0] + 1) + " : " + str(org_docs[my_doc[0][0]]))
 
 
 
