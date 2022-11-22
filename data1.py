@@ -3,17 +3,17 @@ import numpy as np
 import pickle
 from konlpy.tag import Okt
 from tqdm import tqdm
-
-from keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequencse
-from tensorflow.keras.layer import Embedding, Dense, LSTM
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.models import load_model
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.python.keras.layers import Embedding, Dense, LSTM
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.models import load_model
+from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 train_data = pd.read_table("data/ratings_train.txt")
 
-test_data = pd.read_table("data/ratings_text.txt")
+
+test_data = pd.read_table("data/ratings_test.txt")
 
 print("학습용 데이터의 네이버영화 리뷰 개수 : ", len(train_data))
 print("테스트 데이터의 네이버영화 리뷰 개수 : ", len(test_data))
